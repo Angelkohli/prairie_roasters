@@ -1,0 +1,47 @@
+<div class="container mt-4">
+  <h2>🛒 Your Cart</h2>
+
+  <% if @cart_items.empty? %>
+    <p class="text-muted">Your cart is empty. <%= link_to "Browse our coffees →", root_path %></p>
+  <% else %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @cart_items.each do |item| %>
+          <tr>
+            <td><%= item[:product].name %></td>
+            <td><%= number_to_currency(item[:product].current_price) %></td>
+            <td>
+              <%= form_tag cart_path(item[:product].id), method: :patch, style: 'display: inline-block;' do %>
+                <%= number_field_tag :quantity, item[:quantity], min: 1, class: 'form-control form-control-sm', style: 'width: 80px; display: inline-block;' %>
+                <%= submit_tag "Update", class: 'btn btn-sm btn-outline-secondary' %>
+              <% end %>
+            </td>
+            <td><%= number_to_currency(item[:subtotal]) %></td>
+            <td>
+              <%# Use button_to instead of link_to - THIS IS THE KEY %>
+              <%= button_to "Remove", 
+                  cart_path(item[:product].id), 
+                  method: :delete,
+                  data: { confirm: "Remove this item from your cart?" },
+                  class: "btn btn-sm btn-outline-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="text-end">
+      <h4>Total: <%= number_to_currency(@total) %></h4>
+      <%= link_to "Proceed to Checkout", new_order_path, class: 'btn btn-dark' %>
+    </div>
+  <% end %>
+</div>
