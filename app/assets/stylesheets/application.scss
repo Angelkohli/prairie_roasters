@@ -1,0 +1,54 @@
+@import "bootstrap";
+
+// Feature 4.1.5 — Variables
+$primary-color: #2c1810;
+$accent-color: #c8a96e;
+$light-bg: #fdf6ec;
+$text-dark: #333;
+$font-body: 'Georgia', serif;
+
+// Inheritance example
+%card-base {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Nesting example
+.product-card {
+  @extend %card-base;
+
+  &:hover {
+    transform: translateY(-3px);
+    transition: transform 0.2s ease;
+  }
+
+  .card-img-top {
+    border-radius: 8px 8px 0 0;
+  }
+
+  .price-tag {
+    color: $accent-color;
+    font-size: 1.2rem * 1.1;  // operator usage
+    font-weight: bold;
+  }
+}
+
+// Navbar override
+.navbar-brand {
+  font-family: $font-body;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+body {
+  background-color: $light-bg;
+  color: $text-dark;
+  font-family: $font-body;
+}
+
+// Responsive (Feature 4.1.7) - Bootstrap handles most of it
+@media (max-width: 768px) {
+  .product-card {
+    margin-bottom: 1rem;
+  }
+}
