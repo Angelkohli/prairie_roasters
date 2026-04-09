@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prairie Roasters</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", media: "all" %>
+    <%= javascript_include_tag "application", "data-turbolinks-track": "reload" %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <%= link_to "☕ Prairie Roasters", root_path, class: 'navbar-brand fw-bold' %>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Shop</a>
+              <ul class="dropdown-menu">
+                <li><%= link_to "All Coffees", root_path, class: 'dropdown-item' %></li>
+                <% Category.all.each do |cat| %>
+                  <li><%= link_to cat.name, category_path(cat), class: 'dropdown-item' %></li>
+                <% end %>
+              </ul>
+            </li>
+            <li class="nav-item"><%= link_to "About", about_path, class: 'nav-link' %></li>
+            <li class="nav-item"><%= link_to "Contact", contact_path, class: 'nav-link' %></li>
+          </ul>
+
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <%= link_to "🛒 Cart", cart_index_path, class: 'nav-link' %>
+            </li>
+            <% if user_signed_in? %>
+              <li class="nav-item"><%= link_to "Orders", orders_path, class: 'nav-link' %></li>
+              <li class="nav-item">
+                <%= button_to "Sign Out", 
+                    destroy_user_session_path, 
+                    method: :delete,
+                    class: 'btn btn-link nav-link',
+                    form: { style: 'display: inline-block; margin: 0; padding: 0;' } %>
+              </li>
+            <% else %>
+              <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'nav-link' %></li>
+              <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: 'btn btn-outline-light btn-sm mt-1' %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <%# Flash messages %>
+    <div class="container mt-2">
+      <% flash.each do |type, message| %>
+        <div class="alert alert-<%= type == 'notice' ? 'success' : 'danger' %> alert-dismissible fade show">
+          <%= message %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
+    </div>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+      <p class="mb-0">© 2026 Prairie Roasters · Winnipeg, Manitoba · Freshly Roasted Daily</p>
+    </footer>
+
+    <%# Bootstrap JS %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
