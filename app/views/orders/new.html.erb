@@ -1,0 +1,73 @@
+<div class="container mt-4">
+  <h2>Checkout</h2>
+
+  <div class="row">
+    <div class="col-md-7">
+      <h5>Order Summary</h5>
+      <table class="table table-sm">
+        <% @cart_items.each do |item| %>
+          <tr>
+            <td><%= item[:product].name %> x<%= item[:quantity] %></td>
+            <td class="text-end"><%= number_to_currency(item[:subtotal]) %></td>
+          </tr>
+        <% end %>
+        <tr>
+          <th>Subtotal</th>
+          <td class="text-end"><%= number_to_currency(@subtotal) %></td>
+        </tr>
+        <tr>
+          <th>Tax (<%= @province&.name || 'Unknown Province' %>)</th>
+          <td class="text-end"><%= number_to_currency(@tax) %></td>
+        </tr>
+        <tr class="table-dark">
+          <th>Total</th>
+          <td class="text-end"><%= number_to_currency(@total) %></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="col-md-5">
+      <h5>Shipping Address</h5>
+      <% if current_user.address.present? %>
+        <p><strong><%= current_user.name %></strong><br>
+           <%= current_user.address %><br>
+           <%= current_user.province&.name %>
+        </p>
+      <% else %>
+        <p class="text-danger">Please add your address in your profile first.</p>
+        <%= link_to "Update Profile", edit_user_registration_path, class: 'btn btn-outline-secondary btn-sm' %>
+      <% end %>
+
+    <%= tag.div id: 'payment-form' do %>
+      <div id="card-element" class="form-control mb-3"></div>
+      <div id="card-errors" class="text-danger mb-2"></div>
+      <%= form_tag orders_path, method: :post, id: 'stripe-form' do %>
+        <%= hidden_field_tag :total, @total %>
+        <%= hidden_field_tag :stripe_token, '', id: 'stripe-token' %>
+        <button type="submit" class="btn btn-success w-100">Pay <%= number_to_currency(@total) %></button>
+      <% end %>
+    <% end %>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      var stripe = Stripe('<%= ENV["STRIPE_PUBLISHABLE_KEY"] %>');
+      var elements = stripe.elements();
+      var card = elements.create('card');
+      card.mount('#card-element');
+
+      var form = document.getElementById('stripe-form');
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        stripe.createToken(card).then(function(result) {
+          if (result.error) {
+            document.getElementById('card-errors').textContent = result.error.message;
+          } else {
+            document.getElementById('stripe-token').value = result.token.id;
+            form.submit();
+          }
+        });
+      });
+    </script>
+        </div>
+      </div>
+    </div>
