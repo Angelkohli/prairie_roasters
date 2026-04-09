@@ -1,0 +1,156 @@
+<div class="container mt-4">
+
+  <%# Featured Sales Section - Only show on homepage without filters %>
+  <% if @featured_sales.present? && @featured_sales.any? && !params[:filter].present? && !params[:query].present? %>
+    <div class="mb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">🔥 Hot Deals & Special Offers</h2>
+        <%= link_to "View All Sales →", products_path(filter: 'sale'), class: 'text-decoration-none' %>
+      </div>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <% @featured_sales.each do |product| %>
+          <%= render 'product_card', product: product %>
+        <% end %>
+      </div>
+    </div>
+    <hr class="my-5">
+  <% end %>
+
+  <%# FEATURE 2.2 - Shop by Category Section %>
+  <%# Only show on homepage (when no filters or search are active) %>
+  <% if !params[:filter].present? && !params[:query].present? && !params[:category_id].present? %>
+    <div class="row mb-5">
+      <div class="col-12 text-center mb-4">
+        <h2>Shop by Category</h2>
+        <p class="text-muted">Browse our carefully curated coffee collections</p>
+      </div>
+      
+      <% @categories.each do |category| %>
+        <div class="col-md-3 col-sm-6 mb-4">
+          <%= link_to category_path(category), class: 'text-decoration-none' do %>
+            <div class="card category-card h-100 text-center border-0 shadow-sm hover-card">
+              <div class="card-body">
+                <%# Category icon based on name %>
+                <div class="category-icon mb-3">
+                  <% case category.name %>
+                  <% when 'Single Origin' %>
+                    <i class="fas fa-mountain fa-3x" style="color: #2c5f2d;"></i>
+                  <% when 'Signature Blends' %>
+                    <i class="fas fa-blender fa-3x" style="color: #c8a96e;"></i>
+                  <% when 'Brewing Equipment' %>
+                    <i class="fas fa-mug-hot fa-3x" style="color: #8b4513;"></i>
+                  <% when 'Accessories' %>
+                    <i class="fas fa-utensils fa-3x" style="color: #4a4e69;"></i>
+                  <% else %>
+                    <i class="fas fa-coffee fa-3x text-secondary"></i>
+                  <% end %>
+                </div>
+                <h5 class="card-title text-dark"><%= category.name %></h5>
+                <p class="card-text small text-muted"><%= truncate(category.description, length: 70) %></p>
+                <span class="badge bg-secondary">
+                  <%= pluralize(category.products.count, 'product') %>
+                </span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    
+    <%# Only show separator if we have products to show after categories %>
+    <% if @products.any? %>
+      <hr class="my-5">
+      <h2 class="mb-4">All Products</h2>
+    <% end %>
+  <% end %>
+
+  <%# Feature 2.6 - Search form %>
+  <div class="row mb-4">
+    <div class="col-md-8 offset-md-2">
+      <%= form_tag products_path, method: :get, class: 'd-flex gap-2' do %>
+        <%= text_field_tag :query, params[:query], placeholder: "Search coffees...", class: 'form-control' %>
+        <%= select_tag :category_id, 
+              options_from_collection_for_select(Category.all, :id, :name, params[:category_id]),
+              prompt: "All Categories", 
+              class: 'form-select' %>
+        <%= submit_tag "Search", class: 'btn btn-dark' %>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Feature 2.4 - Filter buttons %>
+  <div class="mb-3 text-center">
+    <%= link_to "All Products", products_path, class: "btn btn-outline-secondary btn-sm me-1" %>
+    <%= link_to "🔥 On Sale", products_path(filter: 'sale'), class: "btn btn-danger btn-sm me-1" %>
+    <%= link_to "New Arrivals", products_path(filter: 'new'), class: "btn btn-outline-success btn-sm me-1" %>
+    <%= link_to "Recently Updated", products_path(filter: 'updated'), class: "btn btn-outline-info btn-sm" %>
+  </div>
+
+  <%# Sale filter active message %>
+  <% if params[:filter] == 'sale' %>
+    <div class="alert alert-danger text-center mb-4">
+      <strong>🔥 Sale Items</strong> - Showing products currently on sale with discounted prices!
+    </div>
+  <% end %>
+
+  <%# Category browsing active message (when viewing via category navigation) %>
+  <% if params[:category_id].present? %>
+    <div class="alert alert-info text-center mb-4">
+      <strong>📁 Browsing Category</strong> - Showing products in selected category
+    </div>
+  <% end %>
+
+  <%# Product grid %>
+  <% if @products.any? %>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <% @products.each do |product| %>
+        <%= render 'product_card', product: product %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center">
+      No products found. <%= link_to "Browse all products", root_path %>
+    </div>
+  <% end %>
+
+  <%# Feature 2.5 - Pagination %>
+  <div class="d-flex justify-content-center mt-4">
+    <%= paginate @products %>
+  </div>
+</div>
+
+<%# Add CSS for category cards %>
+<style>
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+  
+  .category-icon {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-card:hover .category-icon {
+    transform: scale(1.1);
+  }
+  
+  .category-card {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  @media (max-width: 768px) {
+    .category-card .card-body {
+      padding: 1rem;
+    }
+    
+    .category-icon i {
+      font-size: 2rem !important;
+    }
+  }
+</style>
