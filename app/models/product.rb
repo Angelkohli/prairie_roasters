@@ -12,7 +12,7 @@ class Product < ApplicationRecord
   
   validates :on_sale, inclusion: { in: [true, false] }, allow_nil: true
   
-  # Sale validations
+  # Sale Feature - 
   validates :sale_price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   
   scope :new_arrivals, -> { where('created_at >= ?', 3.days.ago) }
