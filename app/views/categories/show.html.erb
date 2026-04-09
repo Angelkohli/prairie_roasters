@@ -1,0 +1,28 @@
+<div class="container mt-4">
+  <h1><%= @category.name %></h1>
+  <p class="lead"><%= @category.description %></p>
+  <hr>
+  
+  <div class="mb-4">
+    <%= link_to "All Products", products_path, class: "btn btn-outline-secondary" %>
+    <% Category.all.each do |cat| %>
+      <%= link_to cat.name, category_path(cat), 
+          class: "btn #{cat.id == @category.id ? 'btn-dark' : 'btn-outline-secondary'} me-1" %>
+    <% end %>
+  </div>
+  
+  <h3><%= pluralize(@products.total_count, 'product') %></h3>
+  
+  <% if @products.any? %>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      <%= render partial: 'products/product_card', collection: @products, as: :product %>
+    </div>
+    <div class="mt-4">
+      <%= paginate @products %>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      No products found in this category.
+    </div>
+  <% end %>
+</div>
