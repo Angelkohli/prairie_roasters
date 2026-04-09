@@ -14,5 +14,6 @@ class Province < ApplicationRecord
 
   def self.ransackable_attributes(auth_object = nil)
     ["name", "abbreviation", "gst", "pst", "hst", "created_at", "updated_at"]
-  end
+  end    
+  
 end
