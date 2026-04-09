@@ -1,0 +1,60 @@
+<div class="container mt-4">
+
+  <%# Feature 4.1.3 - Breadcrumbs %>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+      <li class="breadcrumb-item"><%= link_to @category.name, category_path(@category) %></li>
+      <li class="breadcrumb-item active"><%= @product.name %></li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-md-5">
+      <% if @product.image.attached? %>
+        <%= image_tag url_for(@product.image), class: 'img-fluid rounded' %>
+      <% end %>
+    </div>
+    <div class="col-md-7">
+      <%# Sale Badge %>
+      <% if @product.on_sale? %>
+        <span class="badge bg-danger fs-6 mb-3">
+          🔥 <%= @product.discount_percentage %>% OFF - Limited Time!
+        </span>
+      <% end %>
+      
+      <h1><%= @product.name %></h1>
+      <p class="text-muted"><%= @product.category.name %> | <%= @product.roast_level %></p>
+      <% if @product.origin.present? %>
+        <p><strong>Origin:</strong> <%= @product.origin %></p>
+      <% end %>
+      
+      <%# Price Display with Sale Pricing %>
+      <div class="mb-3">
+        <% if @product.on_sale? %>
+          <span class="text-muted text-decoration-line-through me-2 fs-4">
+            <%= number_to_currency(@product.original_price) %>
+          </span>
+          <span class="text-danger fs-1 fw-bold">
+            <%= number_to_currency(@product.current_price) %>
+          </span>
+          <span class="badge bg-danger ms-2">Save <%= number_to_currency(@product.original_price - @product.current_price) %></span>
+        <% else %>
+          <span class="text-success fs-1 fw-bold">
+            <%= number_to_currency(@product.current_price) %>
+          </span>
+        <% end %>
+      </div>
+      
+      <p><%= @product.description %></p>
+      <p class="text-muted small">In Stock: <%= @product.stock_quantity %></p>
+
+      <%# Feature 3.1.1 - Add to Cart %>
+      <%= form_tag cart_index_path, method: :post do %>
+        <%= hidden_field_tag :product_id, @product.id %>
+        <%= number_field_tag :quantity, 1, min: 1, max: @product.stock_quantity, class: 'form-control w-25 d-inline' %>
+        <%= submit_tag "Add to Cart 🛒", class: 'btn btn-dark ms-2' %>
+      <% end %>
+    </div>
+  </div>
+</div>
