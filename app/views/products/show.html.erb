@@ -50,11 +50,12 @@
       <p class="text-muted small">In Stock: <%= @product.stock_quantity %></p>
 
       <%# Feature 3.1.1 - Add to Cart %>
-      <%= form_tag cart_index_path, method: :post do %>
-        <%= hidden_field_tag :product_id, @product.id %>
+      <form action="<%= cart_index_path %>" method="post">
+        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+        <input type="hidden" name="product_id" value="<%= @product.id %>">
         <%= number_field_tag :quantity, 1, min: 1, max: @product.stock_quantity, class: 'form-control w-25 d-inline' %>
-        <%= submit_tag "Add to Cart 🛒", class: 'btn btn-dark ms-2' %>
-      <% end %>
+        <button type="submit" class="btn btn-dark ms-2">Add to Cart 🛒</button>
+      </form
     </div>
   </div>
 </div>

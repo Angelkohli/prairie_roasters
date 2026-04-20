@@ -1,25 +1,23 @@
-<div class="container mt-4">
-  <h2>Your Orders</h2>
-  <% if @orders.empty? %>
-    <p>No orders yet. <%= link_to "Start shopping!", root_path %></p>
-  <% else %>
-    <% @orders.each do |order| %>
-      <div class="card mb-3">
-        <div class="card-header d-flex justify-content-between">
-          <span>Order #<%= order.id %> — <%= order.order_date.strftime('%B %d, %Y') %></span>
-          <span class="badge bg-<%= order.status == 'delivered' ? 'success' : 'warning' %>">
-            <%= order.status.capitalize %>
-          </span>
+<% @orders.each do |order| %>
+  <div class="card mb-3">
+    <div class="card-header d-flex justify-content-between">
+      <span>Order #<%= order.id %> — <%= order.order_date.strftime('%B %d, %Y') %></span>
+      <span class="badge bg-<%= order.status == 'delivered' ? 'success' : 'warning' %>"><%= order.status.capitalize %></span>
+    </div>
+    <div class="card-body">
+      <% order.order_items.each do |item| %>
+        <p class="mb-1"><%= item.product.name %> x<%= item.quantity %> — <%= number_to_currency(item.price_at_purchase) %> each</p>
+      <% end %>
+      <hr>
+      <div class="row">
+        <div class="col-md-6">
+          <small>Subtotal: <%= number_to_currency(order.subtotal) %></small><br>
+          <small>Tax: <%= number_to_currency(order.tax_amount) %></small>
         </div>
-        <div class="card-body">
-          <% order.order_items.each do |item| %>
-            <p class="mb-1"><%= item.product.name %> x<%= item.quantity %> —
-               <%= number_to_currency(item.price_at_purchase) %> each</p>
-          <% end %>
-          <hr>
+        <div class="col-md-6 text-end">
           <strong>Total: <%= number_to_currency(order.total) %></strong>
         </div>
       </div>
-    <% end %>
-  <% end %>
-</div>
+    </div>
+  </div>
+<% end %>

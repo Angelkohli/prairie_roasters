@@ -15,42 +15,48 @@ class OrdersController < ApplicationController
 
   # Place the order
   def create
-  @cart_items = cart_items_with_products
+    @cart_items = cart_items_with_products
 
-  # Charge via Stripe
-  begin
-    charge = Stripe::Charge.create(
-      amount: (params[:total].to_f * 100).to_i,  # Stripe uses cents
-      currency: 'cad',
-      source: params[:stripe_token],
-      description: "Prairie Roasters Order - #{current_user.email}"
+    # Calculate subtotal and tax again (or use values from params)
+    subtotal = @cart_items.sum { |i| i[:subtotal] }
+    province = current_user.province
+    tax = province ? calculate_tax(subtotal, province) : 0
+    total = subtotal + tax
+
+    # Charge via Stripe (if implemented)
+    begin
+      charge = Stripe::Charge.create(
+        amount: (total * 100).to_i,
+        currency: 'cad',
+        source: params[:stripe_token],
+        description: "Prairie Roasters Order - #{current_user.email}"
+      )
+      stripe_payment_id = charge.id
+      stripe_status = 'paid'
+    rescue Stripe::CardError => e
+      flash[:alert] = e.message
+      return redirect_to new_order_path
+    end
+
+    @order = Order.new(
+      customer: current_user,
+      order_date: Time.current,
+      status: stripe_status,
+      total: total,
+      subtotal: subtotal,        # <-- new
+      tax_amount: tax,           # <-- new
+      stripe_payment_id: stripe_payment_id
     )
-    stripe_payment_id = charge.id
-    stripe_status = 'paid'
-  rescue Stripe::CardError => e
-    flash[:alert] = e.message
-    return redirect_to new_order_path
-  end
-
-  @order = Order.new(
-    customer_id: current_user.id,
-    order_date: Time.current,
-    status: stripe_status,
-    total: params[:total].to_f,
-    stripe_payment_id: stripe_payment_id  # Feature 3.3.1 — link to Stripe
-  )
 
     if @order.save
-      # Save each cart item as an order_item (locks in price)
       @cart_items.each do |item|
         @order.order_items.create!(
           product: item[:product],
           quantity: item[:quantity],
-          price_at_purchase: item[:product].current_price  # Feature 3.3.2 - price locked at purchase
+          price_at_purchase: item[:product].current_price
         )
       end
-
-      session[:cart] = {}  # Clear cart
+      session[:cart] = {}
       flash[:notice] = "Order placed successfully! Order ##{@order.id}"
       redirect_to order_path(@order)
     else

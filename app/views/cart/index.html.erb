@@ -20,10 +20,12 @@
             <td><%= item[:product].name %></td>
             <td><%= number_to_currency(item[:product].current_price) %></td>
             <td>
-              <%= form_tag cart_path(item[:product].id), method: :patch, style: 'display: inline-block;' do %>
+              <form action="<%= cart_path(item[:product].id) %>" method="post">
+                <input type="hidden" name="_method" value="patch">
+                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
                 <%= number_field_tag :quantity, item[:quantity], min: 1, class: 'form-control form-control-sm', style: 'width: 80px; display: inline-block;' %>
-                <%= submit_tag "Update", class: 'btn btn-sm btn-outline-secondary' %>
-              <% end %>
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+              </form>
             </td>
             <td><%= number_to_currency(item[:subtotal]) %></td>
             <td>

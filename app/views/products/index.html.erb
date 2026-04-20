@@ -45,7 +45,7 @@
                     <i class="fas fa-coffee fa-3x text-secondary"></i>
                   <% end %>
                 </div>
-                <h5 class="card-title text-dark"><%= category.name %></h5>
+                <h3 class="card-title text-dark"><%= category.name %></h3>
                 <p class="card-text small text-muted"><%= truncate(category.description, length: 70) %></p>
                 <span class="badge bg-secondary">
                   <%= pluralize(category.products.count, 'product') %>
@@ -118,39 +118,3 @@
     <%= paginate @products %>
   </div>
 </div>
-
-<%# Add CSS for category cards %>
-<style>
-  .hover-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-  }
-  
-  .hover-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-  }
-  
-  .category-icon {
-    transition: transform 0.3s ease;
-  }
-  
-  .hover-card:hover .category-icon {
-    transform: scale(1.1);
-  }
-  
-  .category-card {
-    border-radius: 15px;
-    overflow: hidden;
-  }
-  
-  @media (max-width: 768px) {
-    .category-card .card-body {
-      padding: 1rem;
-    }
-    
-    .category-icon i {
-      font-size: 2rem !important;
-    }
-  }
-</style

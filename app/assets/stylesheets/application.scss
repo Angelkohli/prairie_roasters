@@ -7,13 +7,13 @@ $light-bg: #fdf6ec;
 $text-dark: #333;
 $font-body: 'Georgia', serif;
 
-// Inheritance example
+// Inheritance 
 %card-base {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-// Nesting example
+// Nesting 
 .product-card {
   @extend %card-base;
 
@@ -33,7 +33,6 @@ $font-body: 'Georgia', serif;
   }
 }
 
-// Navbar override
 .navbar-brand {
   font-family: $font-body;
   font-size: 1.4rem;
@@ -52,3 +51,36 @@ body {
     margin-bottom: 1rem;
   }
 }
+
+  .hover-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+  }
+  
+  .category-icon {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-card:hover .category-icon {
+    transform: scale(1.1);
+  }
+  
+  .category-card {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  @media (max-width: 768px) {
+    .category-card .card-body {
+      padding: 1rem;
+    }
+    
+    .category-icon i {
+      font-size: 2rem !important;
+    }
+  }

@@ -29,8 +29,6 @@
                 <% end %>
               </ul>
             </li>
-            <li class="nav-item"><%= link_to "About", about_path, class: 'nav-link' %></li>
-            <li class="nav-item"><%= link_to "Contact", contact_path, class: 'nav-link' %></li>
           </ul>
 
           <ul class="navbar-nav ms-auto">
@@ -40,11 +38,13 @@
             <% if user_signed_in? %>
               <li class="nav-item"><%= link_to "Orders", orders_path, class: 'nav-link' %></li>
               <li class="nav-item">
-                <%= button_to "Sign Out", 
-                    destroy_user_session_path, 
-                    method: :delete,
-                    class: 'btn btn-link nav-link',
-                    form: { style: 'display: inline-block; margin: 0; padding: 0;' } %>
+                <form action="<%= destroy_user_session_path %>" method="post" style="display: inline-block;">
+                  <input type="hidden" name="_method" value="delete">
+                  <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                  <button type="submit" class="btn btn-link nav-link" style="display: inline-block; padding: 0; border: none; background: none;">
+                    Sign Out
+                  </button>
+                </form>
               </li>
             <% else %>
               <li class="nav-item"><%= link_to "Login", new_user_session_path, class: 'nav-link' %></li>

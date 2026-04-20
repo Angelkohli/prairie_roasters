@@ -2,6 +2,7 @@ class Product < ApplicationRecord
   belongs_to :category
   has_many :product_prices, dependent: :destroy
   has_many :order_items
+  has_many :orders, through: :order_items
   has_one_attached :image   # Active Storage
 
   validates :name, presence: true

@@ -43,6 +43,8 @@
       <div id="card-errors" class="text-danger mb-2"></div>
       <%= form_tag orders_path, method: :post, id: 'stripe-form' do %>
         <%= hidden_field_tag :total, @total %>
+        <%= hidden_field_tag :subtotal, @subtotal %>   <!-- new -->
+        <%= hidden_field_tag :tax, @tax %>  
         <%= hidden_field_tag :stripe_token, '', id: 'stripe-token' %>
         <button type="submit" class="btn btn-success w-100">Pay <%= number_to_currency(@total) %></button>
       <% end %>
